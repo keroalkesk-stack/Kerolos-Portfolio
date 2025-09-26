@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kerolos Emad Rasmy - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e5e5e5;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 80px 1fr 300px;
+        }
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+            .content-section {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .profile-section {
+                padding: 20px;
+            }
+            .sidebar {
+                display: flex;
+                justify-content: space-around;
+                width: 100%;
+                height: auto;
+                background-color: rgba(247, 245, 242, 0.5);
+                border-radius: 0;
+                backdrop-filter: blur(10px);
+                position: fixed;
+                bottom: 0;
+                top: auto;
+                z-index: 50;
+                box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            }
+            .sidebar-icon {
+                padding: 10px;
+            }
+        }
+        .sidebar {
+            background-color: rgba(247, 245, 242, 0.5);
+            backdrop-filter: blur(10px);
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+        .sidebar-icon {
+            color: #b5b5b5;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 50%;
+            margin: 15px 0;
+        }
+        .sidebar-icon.active {
+            color: #ef4444;
+            background-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar-icon:hover {
+            color: #ef4444;
+        }
+        .content-section {
+            background-color: #fcfbf8;
+            padding: 50px 80px;
+        }
+        .profile-section {
+            background-color: #333333;
+            color: #f3f4f6;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: 300px;
+            overflow-y: auto;
+        }
+        @media (max-width: 1024px) {
+            .profile-section {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+            .main-container {
+                display: flex;
+                flex-direction: column;
+            }
+            .content-section {
+                order: 2;
+            }
+            .profile-section {
+                order: 1;
+            }
+            .sidebar {
+                order: 3;
+            }
+        }
+        .profile-section img {
+            border: 4px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .lazy-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            margin-bottom: 100px;
+        }
+        .lazy-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .skill-bar {
+            width: 0%;
+            transition: width 1.5s ease-out;
+        }
+        .skill-bar.filled {
+            width: var(--skill-percent);
+        }
+        .divider {
+            height: 1px;
+            background-color: #ddd;
+            margin: 80px 0;
+        }
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+            position: relative;
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #888;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-image, .modal-video {
+            display: block;
+            max-width: 100%;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        
+        <!-- Sidebar -->
+        <div class="sidebar lg:flex-col">
+            <a href="#welcome" class="sidebar-icon active" data-section="welcome">
+                <i class="fas fa-home text-2xl"></i>
+            </a>
+            <a href="#about-me" class="sidebar-icon" data-section="about-me">
+                <i class="fas fa-user text-2xl"></i>
+            </a>
+            <a href="#resume" class="sidebar-icon" data-section="resume">
+                <i class="fas fa-graduation-cap text-2xl"></i>
+            </a>
+            <a href="#graduation-project" class="sidebar-icon" data-section="graduation-project">
+                <i class="fas fa-seedling text-2xl"></i>
+            </a>
+            <a href="#other-projects" class="sidebar-icon" data-section="other-projects">
+                <i class="fas fa-folder-open text-2xl"></i>
+            </a>
+            <a href="#contact" class="sidebar-icon" data-section="contact">
+                <i class="fas fa-envelope text-2xl"></i>
+            </a>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-section">
+
+            <!-- Welcome Section -->
+            <section id="welcome" class="content-item lazy-content flex items-center justify-center h-[calc(100vh-100px)]">
+                <div class="text-center">
+                    <h1 class="text-6xl md:text-8xl font-extrabold text-gray-800 mb-6">Hello I'm Kerolos</h1>
+                    <p class="text-xl md:text-2xl text-gray-600 mb-8">
+                        A highly motivated graduated Electrical Engineering with a strong passion for the power industry, web and app development.
+                    </p>
+                    <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105" onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });">
+                        HIRE ME
+                    </button>
+                </div>
+            </section>
+            
+            <div class="divider"></div>
+            
+            <!-- About Me Section -->
+            <section id="about-me" class="content-item lazy-content">
+                <h1 class="text-5xl font-extrabold text-gray-800 mb-6">About Me</h1>
+                <p class="text-lg text-gray-600 mb-8">
+                    Highly motivated Electrical Engineering undergraduate with a strong passion for the
+                     power industry seeking to leverage my academic foundation and leadership skills to gain
+                     valuable experience in electricity generation, transmission systems, Control systems and
+                     sustainable and renewable energy. Eager to contribute to a team environment and learn
+                     from experienced professionals.
+                </p>
+                
+                <h2 class="text-3xl font-bold text-gray-800 mt-8 mb-4">Personal Info</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+                    <p><strong>Name:</strong> Kerolos Emad Rasmy</p>
+                    <p><strong>Overall Rating:</strong> B+</p>
+                    <p><strong>Residence:</strong> Beni Suef, Egypt</p>
+                    <p><strong>Email:</strong> Keroalkesk@gmail.com</p>
+                    <p><strong>Phone:</strong> +20 122 531 7233</p>
+                </div>
+            </section>
+            
+            <div class="divider"></div>
+            
+            <!-- Resume Section -->
+            <section id="resume" class="content-item lazy-content">
+                <h1 class="text-5xl font-extrabold text-gray-800 mb-8">Resume</h1>
+                
+                <h2 class="text-3xl font-bold text-gray-800 mt-8 mb-4">Education</h2>
+                <div class="space-y-6 text-gray-700">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">B.Sc. in Electrical Power Engineering</p>
+                            <p class="font-medium text-gray-600">Beni-Suef University</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2020 - 2025</p>
+                    </div>
+                </div>
+
+                <h2 class="text-3xl font-bold text-gray-800 mb-4 mt-12">Trainings & Courses</h2>
+                <div class="space-y-8 text-gray-700">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">Distribution Diploma</p>
+                            <p class="mt-2 text-sm text-gray-600">Completed a specialized Distribution diploma, focusing on electrical power systems in building environments. Gained proficiency in AutoCAD and Dialux Evo for designing and simulating electrical layouts, and honed skills in Excel.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2022</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">Training at Al-Wajh Al-Qibli Electricity Production Company</p>
+                            <p class="mt-2 text-sm text-gray-600">Gained comprehensive understanding of the electricity generation process, from initial power plant operations to high-voltage transmission for distribution.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2023</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">Training at South Helwan Electricity Production Company</p>
+                            <p class="mt-2 text-sm text-gray-600">Enhanced understanding of power plant equipment like the transformer and switch gear and switch yard and how it works and maintenance.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2023</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">Training at Elkorymat station Electricity Production Company</p>
+                            <p class="mt-2 text-sm text-gray-600">Developed a strong understanding of the interplay between steam and gas turbine operations in the electricity generation process.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2023</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">Introduction to Artificial Intelligence and Applications at ZEWAIL CITY</p>
+                            <p class="mt-2 text-sm text-gray-600">Explored the history and core concepts of Al, while equipping me with Python coding skills and project management tools.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2023</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">First Arab Virtual Forum on Sustainability & Renewable Energy</p>
+                            <p class="mt-2 text-sm text-gray-600">An intensive program that equipped me with a deep understanding of solar and wind energy, including maintenance procedures, necessary calculations, and the integration of these technologies into hybrid systems.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2023</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">SMC Company for Solar Panels Training</p>
+                            <p class="mt-2 text-sm text-gray-600">Provided a comprehensive understanding of on-grid and off-grid solar panel systems, pump applications, and inverter functionality.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2024</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">GIZA CABLES gc3 Training</p>
+                            <p class="mt-2 text-sm text-gray-600">Offered a comprehensive understanding of cable production, from raw materials to finished products, and exploring cable families.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2024</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">Schneider Electric Global Student Experience</p>
+                            <p class="mt-2 text-sm text-gray-600">Completed the Supply Chain Learning Track, gaining comprehensive knowledge in manufacturing processes, logistics management, and supply chain transformations.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2024</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">Middle Egypt Electricity Distribution Company Internship</p>
+                            <p class="mt-2 text-sm text-gray-600">Gained hands-on experience with cables, transformers, medium and low transmission lines, and other electrical distribution equipment.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2024</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">HA Group Automation and Control Course</p>
+                            <p class="mt-2 text-sm text-gray-600">Gained knowledge in Classic Control principles, including PLC Basic Programming, ladder logic, timers, and counters.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2024</p>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">ITI FULL STACK WEB DEVELOPMENT BY PYTHON</p>
+                            <p class="mt-2 text-sm text-gray-600">Gained comprehensive knowledge in Full Stack Web Development using Python and the Django framework.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">2025</p>
+                    </div>
+                </div>
+
+                <h2 class="text-3xl font-bold text-gray-800 mb-4 mt-12">My Skills</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 text-gray-700">
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">Computer Skills</h3>
+                        <ul class="list-disc list-inside">
+                            <li>Microsoft Word</li>
+                            <li>Microsoft Excel</li>
+                            <li>Microsoft Power Point</li>
+                            <li>Revit</li>
+                            <li>ETAP</li>
+                            <li>Dialux Evo</li>
+                            <li>AutoCAD</li>
+                            <li>Homer</li>
+                            <li>PVSYS</li>
+                            <li>MATLAB</li>
+                            <li>Proteus</li>
+                            <li>Factory IO</li>
+                            <li>TIA PORTAL</li>
+                            <li>Python</li>
+                            <li>HTML</li>
+                            <li>CSS</li>
+                            <li>JavaScript</li>
+                            <li>Visual Studio</li>
+                            <li>Django</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">Languages</h3>
+                        <ul class="list-disc list-inside">
+                            <li>English (B2)</li>
+                            <li>Arabic (Native Speaker)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">Interpersonal Skills</h3>
+                        <ul class="list-disc list-inside">
+                            <li>Leadership</li>
+                            <li>Time Management</li>
+                            <li>Team Player</li>
+                            <li>Problem Solving</li>
+                            <li>Work Ethics</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="divider"></div>
+
+            <!-- Graduation Project Section -->
+            <section id="graduation-project" class="content-item lazy-content">
+                <h1 class="text-5xl font-extrabold text-gray-800 mb-8">My Graduation Project</h1>
+                <div class="space-y-12 text-gray-700">
+                    <div class="flex flex-col md:flex-row items-start space-y-6 md:space-y-0 md:space-x-8">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-seedling text-5xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-2xl text-gray-800 mb-2">Smart Solar-Powered Irrigation System using AI and IoT</h3>
+                            <p class="text-lg text-gray-600 mb-4">
+                                My graduation project, which combined artificial intelligence and IoT to create an intelligent system for monitoring and improving agricultural efficiency.
+                            </p>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+                                <!-- AI & Machine Learning Section -->
+                                <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+                                    <div class="flex items-center mb-2 space-x-2">
+                                        <i class="fas fa-brain text-2xl text-blue-500"></i>
+                                        <h4 class="font-semibold text-xl text-gray-800">AI & Machine Learning</h4>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-4">
+                                        Developed a plant health monitoring model using image processing and machine learning techniques like K-Nearest Neighbors classifier to detect early signs of unhealthy crops.
+                                    </p>
+                                    <img src="D:\portofolio\images\photo_2025-09-26_05-32-29.jpg" alt="AI & ML Model" class="w-full rounded">
+                                </div>
+                                <!-- IoT Platform Section -->
+                                <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+                                    <div class="flex items-center mb-2 space-x-2">
+                                        <i class="fas fa-wifi text-2xl text-cyan-500"></i>
+                                        <h4 class="font-semibold text-xl text-gray-800">IoT Platform</h4>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-4">
+                                        Built a real-time IoT platform using Raspberry Pi and camera modules, integrated with a Telegram bot for instant notifications and alerts. Incorporated weather forecasting APIs for smarter irrigation decisions.
+                                    </p>
+                                    <img src="D:\portofolio\images\photo_2025-09-26_05-33-21.jpg" alt="IoT Platform" class="w-full rounded">
+                                </div>
+                                <!-- Mobile Application & Data Storage Section -->
+                                <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+                                    <div class="flex items-center mb-2 space-x-2">
+                                        <i class="fas fa-mobile-alt text-2xl text-purple-500"></i>
+                                        <h4 class="font-semibold text-xl text-gray-800">Mobile App & Data Storage</h4>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-4">
+                                        Implemented data storage and a mobile application through Firebase and Flutter, enabling farmers to remotely track crop health, growth progress, and environmental conditions.
+                                    </p>
+                                    <img src="D:\portofolio\images\photo_2025-09-26_05-32-02.jpg" alt="Mobile App" class="w-full rounded">
+                                </div>
+                                <!-- Sustainability Section -->
+                                <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+                                    <div class="flex items-center mb-2 space-x-2">
+                                        <i class="fas fa-sun text-2xl text-yellow-500"></i>
+                                        <h4 class="font-semibold text-xl text-gray-800">Sustainability</h4>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-4">
+                                        The entire system is powered by solar energy, making it a sustainable, cost-effective, and practical solution for remote agricultural areas.
+                                    </p>
+                                    <img src="D:\portofolio\images\photo_2025-09-26_05-32-38.jpg" alt="Solar Power" class="w-full rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="divider"></div>
+
+            <!-- Other Projects Section -->
+            <section id="other-projects" class="content-item lazy-content">
+                <h1 class="text-5xl font-extrabold text-gray-800 mb-8">My Projects</h1>
+                <p class="text-lg text-gray-600 mb-8">
+                    These are some of the small projects I have built during my studies to apply my skills in automation, electronics, and programming. Click on any project to learn more.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- PLC Project -->
+                    <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer project-card" data-project-id="project1">
+                        <div class="flex items-center mb-4 space-x-2">
+                            <i class="fas fa-cogs text-3xl text-gray-700"></i>
+                            <h3 class="font-semibold text-xl text-gray-800">Sorting System (PLC & Factory I/O)</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            A simulation of an automated sorting system for high and low boxes.
+                        </p>
+                    </div>
+                    <!-- Proteus Project -->
+                    <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer project-card" data-project-id="project2">
+                        <div class="flex items-center mb-4 space-x-2">
+                            <i class="fas fa-fire-extinguisher text-3xl text-gray-700"></i>
+                            <h3 class="font-semibold text-xl text-gray-800">Fire & Gas Detection</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            A circuit simulation on Proteus to detect fire and gas with visual and audio alerts.
+                        </p>
+                    </div>
+                    <!-- Arduino Project -->
+                    <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer project-card" data-project-id="project3">
+                        <div class="flex items-center mb-4 space-x-2">
+                            <i class="fas fa-microchip text-3xl text-gray-700"></i>
+                            <h3 class="font-semibold text-xl text-gray-800">Distance Measurement (Arduino)</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            An Arduino project using an ultrasonic sensor to measure distance and display it with colored LEDs.
+                        </p>
+                    </div>
+                    <!-- AutoCAD & Dialux Evo Project -->
+                    <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer project-card" data-project-id="project4">
+                        <div class="flex items-center mb-4 space-x-2">
+                            <i class="fas fa-building text-3xl text-gray-700"></i>
+                            <h3 class="font-semibold text-xl text-gray-800">Building Lighting & Electrical Design</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            A building design project using AutoCAD for electrical layouts and Dialux Evo for lighting calculations.
+                        </p>
+                    </div>
+                    <!-- CrispyBite Website Project -->
+                    <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer project-card" data-project-id="project5">
+                        <div class="flex items-center mb-4 space-x-2">
+                            <i class="fas fa-utensils text-3xl text-gray-700"></i>
+                            <h3 class="font-semibold text-xl text-gray-800">CrispyBite Restaurant Website</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            A full-stack website developed for a restaurant, showcasing menu, contacts, and services.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="divider"></div>
+
+            <!-- Contact Section -->
+            <section id="contact" class="content-item lazy-content">
+                <h1 class="text-5xl font-extrabold text-gray-800 mb-8">Contact Me</h1>
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center items-center max-w-lg mx-auto">
+                    <!-- Email Button -->
+                    <a href="mailto:Keroalkesk@gmail.com" class="w-full md:w-auto flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition-colors duration-300">
+                        <i class="fas fa-envelope mr-2"></i>
+                        <span>Email</span>
+                    </a>
+                    <!-- WhatsApp Button -->
+                    <a href="https://wa.me/201225317233" target="_blank" class="w-full md:w-auto flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-md transition-colors duration-300">
+                        <i class="fab fa-whatsapp mr-2"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                    <!-- Phone Call Button -->
+                    <a href="tel:+201225317233" class="w-full md:w-auto flex items-center justify-center bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full shadow-md transition-colors duration-300">
+                        <i class="fas fa-phone-alt mr-2"></i>
+                        <span>Call Me</span>
+                    </a>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Profile Section (Fixed on the right side) -->
+        <div class="profile-section">
+            <img src="D:\portofolio\images\photo_2025-09-26_05-26-38.jpg" alt="Kerolos's profile picture" class="rounded-full w-32 h-32 mb-4">
+            <h2 class="text-2xl font-bold mb-2">Kerolos Emad</h2>
+            <p class="text-sm text-gray-400 mb-4">Electrical Power Engineer & Web Developer</p>
+            <p class="text-sm text-gray-400 mb-6 max-w-[250px]">
+                A passionate engineer with a strong background in electrical systems and a growing expertise in web development.
+            </p>
+            <div class="flex space-x-4 text-gray-400">
+                <a href="https://www.facebook.com/share/16uxPmXJ3k/?mibextid=wwXIfr" class="hover:text-white transition-colors duration-300"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/kero_fr_karas?igsh=MXQ5em0wZndqMHZ1Nw%3D%3D&utm_source=qr" class="hover:text-white transition-colors duration-300"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/in/kerolos-emad-rasmy-908a05240?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" class="hover:text-white transition-colors duration-300"><i class="fab fa-linkedin-in"></i></a>
+                
+                <a href="https://github.com/keroalkesk-stack" class="hover:text-white transition-colors duration-300"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modals for Projects -->
+    <div id="project1-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="document.getElementById('project1-modal').style.display = 'none';">&times;</span>
+            <h2 class="text-3xl font-bold mb-4">Sorting System (PLC & Factory I/O)</h2>
+            <p class="text-gray-700 mb-4">
+                This project involves creating an automated sorting system using a Programmable Logic Controller (PLC) and Factory I/O simulation software. The system is designed to sort boxes based on their height, directing tall boxes to one conveyor and short boxes to another. The logic is implemented using ladder logic, which demonstrates my skills in PLC programming and automation.
+            </p>
+            <!-- Add your project video here. Replace the placeholder URL with your local video URL. Make sure the video is in the same folder as this HTML file. -->
+            <video class="modal-video" controls>
+                <source src="D:\portofolio\Screen Recording 2025-09-25 143348.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+    
+    <div id="project2-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="document.getElementById('project2-modal').style.display = 'none';">&times;</span>
+            <h2 class="text-3xl font-bold mb-4">Proteus Fire & Gas Detection System</h2>
+            <p class="text-gray-700 mb-4">
+                A circuit simulation created with Proteus software to detect fire and gas leaks. The system uses various sensors to monitor the environment and provides both a visual alert on a screen and an audible alarm to notify users of a potential hazard. This project highlights my proficiency in circuit design and simulation.
+            </p>
+            <!-- Add your project video here. Replace the placeholder URL with your local video URL. Make sure the video is in the same folder as this HTML file. -->
+            <video class="modal-video" controls>
+                <source src="D:\portofolio\IMG_8347.MP4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+    
+    <div id="project3-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="document.getElementById('project3-modal').style.display = 'none';">&times;</span>
+            <h2 class="text-3xl font-bold mb-4">Arduino Distance Measurement System</h2>
+            <p class="text-gray-700 mb-4">
+                An Arduino project that measures distance using an ultrasonic sensor. The system provides a visual representation of the distance using a series of colored LEDs. The LEDs change color based on the measured distance, offering a simple and intuitive way to understand the output.
+            </p>
+            <!-- Add your project image here. Replace the placeholder URL with your image URL. -->
+            <img src="D:\portofolio\images\photo_2025-09-26_05-16-23.jpg" alt="Arduino Project Image" class="modal-image">
+        </div>
+    </div>
+
+    <!-- New Modal for AutoCAD & Dialux Evo Project -->
+    <div id="project4-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="document.getElementById('project4-modal').style.display = 'none';">&times;</span>
+            <h2 class="text-3xl font-bold mb-4">Building Lighting & Electrical Design</h2>
+            <p class="text-gray-700 mb-4">
+                This project involved the complete electrical design of a building using professional software. AutoCAD was used to design and detail the electrical layouts, including wiring diagrams and circuit plans. Additionally, Dialux Evo was used for advanced lighting calculations and simulations to ensure optimal illumination and energy efficiency for the entire building.
+            </p>
+            <!-- Add your project image here. Replace the placeholder URL with your image URL. -->
+            <img src="D:\portofolio\images\Screenshot 2025-09-25 145206.png" alt="AutoCAD & Dialux Evo Project Image" class="modal-image">
+        </div>
+    </div>
+
+    <!-- New Modal for CrispyBite Restaurant Website -->
+    <div id="project5-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="document.getElementById('project5-modal').style.display = 'none';">&times;</span>
+            <h2 class="text-3xl font-bold mb-4">CrispyBite Restaurant Website</h2>
+            <p class="text-gray-700 mb-4">
+                A full-stack website developed to serve as the online presence for a restaurant. The website includes key features such as a detailed menu, a contact page with location and hours, and a photo gallery. This project demonstrates my skills in web development using Python and Django.
+            </p>
+            <!-- Add your project image here. Replace the placeholder URL with your image URL. -->
+            <img src="D:\portofolio\images\Screenshot 2025-09-08 171447.png" alt="CrispyBite Website Project Image" class="modal-image">
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarIcons = document.querySelectorAll('.sidebar-icon');
+            const lazyContent = document.querySelectorAll('.lazy-content');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '-50% 0px -50% 0px', // Adjusted to activate when section is in the middle of the viewport
+                threshold: 0,
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const id = entry.target.getAttribute('id');
+                    const icon = document.querySelector(`.sidebar-icon[data-section="${id}"]`);
+
+                    if (entry.isIntersecting) {
+                        sidebarIcons.forEach(i => i.classList.remove('active'));
+                        if (icon) {
+                            icon.classList.add('active');
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            lazyContent.forEach(section => {
+                observer.observe(section);
+            });
+
+
+            // Smooth scroll on sidebar icon click
+            sidebarIcons.forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    const sectionId = icon.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionId);
+                    
+                    window.scrollTo({
+                        top: targetSection.offsetTop,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+
+            // Lazy load content
+            const lazyObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            lazyContent.forEach(item => {
+                lazyObserver.observe(item);
+            });
+
+            // Modal functionality
+            const projectCards = document.querySelectorAll('.project-card');
+            projectCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const projectId = card.getAttribute('data-project-id');
+                    const modal = document.getElementById(projectId + '-modal');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                    }
+                });
+            });
+
+            const closeButtons = document.querySelectorAll('.close-button');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.closest('.modal').style.display = 'none';
+                });
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
